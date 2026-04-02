@@ -1,0 +1,79 @@
+{
+  "name": "vibralink",
+  "version": "1.0.0",
+  "private": true,
+  "author": "Framefield",
+  "description": "Framefield VibraLink for Windows. Stream local PC system audio to a phone browser over WiFi with low-latency WebRTC.",
+  "license": "UNLICENSED",
+  "main": "main/main.js",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "build:win": "electron-builder --win nsis"
+  },
+  "keywords": [
+    "electron",
+    "webrtc",
+    "audio-streaming",
+    "windows",
+    "wasapi",
+    "framefield"
+  ],
+  "build": {
+    "appId": "com.framefield.vibralink",
+    "productName": "VibraLink",
+    "artifactName": "../VibraLink-Setup-${version}.${ext}",
+    "copyright": "Copyright (c) 2026 Framefield",
+    "directories": {
+      "output": "../dist",
+      "buildResources": "build-resources"
+    },
+    "files": [
+      "main/**/*",
+      "renderer/**/*",
+      "build-resources/VibraLink.png",
+      "build-resources/VibraLink.ico",
+      "package.json",
+      "README.md",
+      "OPEN_SOURCE_DISCLAIMER.txt"
+    ],
+    "win": {
+      "icon": "build-resources/VibraLink.ico",
+      "legalTrademarks": "VibraLink by Framefield",
+      "signtoolOptions": {
+        "publisherName": "Framefield"
+      },
+      "verifyUpdateCodeSignature": false,
+      "signAndEditExecutable": false,
+      "target": [
+        "nsis"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "allowElevation": true,
+      "createDesktopShortcut": "always",
+      "createStartMenuShortcut": true,
+      "shortcutName": "VibraLink",
+      "uninstallDisplayName": "VibraLink",
+      "installerIcon": "build-resources/VibraLink.ico",
+      "uninstallerIcon": "build-resources/VibraLink.ico",
+      "installerHeaderIcon": "build-resources/VibraLink.ico",
+      "license": "OPEN_SOURCE_DISCLAIMER.txt",
+      "runAfterFinish": true,
+      "deleteAppDataOnUninstall": false
+    }
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "qrcode": "^1.5.4",
+    "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "electron": "^35.2.1",
+    "electron-builder": "^25.1.8",
+    "png-to-ico": "^3.0.1",
+    "sharp": "^0.34.5"
+  }
+}

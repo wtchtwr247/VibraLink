@@ -1,0 +1,17 @@
+VibraLink – Open Source Notice
+
+This project is developed and maintained by Framefield.
+
+The source code contained in this repository is made publicly available as open-source software. You are free to view, use, modify, and distribute this code in accordance with the terms of the included license.
+
+Please note the following:
+
+- This software is provided "as is", without warranty of any kind, express or implied.
+- Framefield is not liable for any damages, data loss, system issues, or other consequences arising from the use, modification, or distribution of this software.
+- Any modifications, forks, or redistributed versions of VibraLink are the sole responsibility of their respective creators.
+- Framefield does not endorse or take responsibility for any third-party versions of this software.
+
+For official releases and updates, please refer to the original repository:
+https://github.com/wtchtwr247/VibraLink
+
+By using this source code, you acknowledge and accept these terms.
