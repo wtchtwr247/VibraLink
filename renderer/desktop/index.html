@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' ws: http:;"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VibraLink Desktop</title>
+    <link rel="stylesheet" href="/desktop/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero">
+        <p class="eyebrow">VibraLink Desktop</p>
+        <h1>Stream Windows system audio to your phone.</h1>
+        <p class="lede">
+          The desktop app captures system output through Electron's desktop
+          audio loopback path and streams it to the phone browser over WebRTC.
+        </p>
+      </section>
+
+      <section class="panel">
+        <div class="status-row">
+          <div>
+            <p class="label">Status</p>
+            <div class="badge-row">
+              <span id="statusDot" class="dot offline"></span>
+              <span id="statusText">Disconnected</span>
+            </div>
+          </div>
+          <button id="toggleButton" class="primary">Start Streaming</button>
+        </div>
+
+        <div class="details">
+          <div class="detail-card">
+            <p class="label">Phone URL</p>
+            <p id="phoneUrl" class="value">Loading...</p>
+          </div>
+          <div class="detail-card">
+            <p class="label">Local IP</p>
+            <p id="localIp" class="value">Loading...</p>
+          </div>
+          <div class="detail-card">
+            <p class="label">Port</p>
+            <p id="port" class="value">Loading...</p>
+          </div>
+        </div>
+
+        <div class="settings-grid">
+          <div class="detail-card">
+            <p class="label">Capture Device</p>
+            <select id="deviceSelect" class="select-input"></select>
+          </div>
+          <div class="detail-card">
+            <p class="label">Quality Mode</p>
+            <select id="qualitySelect" class="select-input"></select>
+          </div>
+        </div>
+
+        <div class="details telemetry-grid">
+          <div class="detail-card">
+            <p class="label">Connected Device</p>
+            <p id="connectedDevice" class="value">Windows default output</p>
+          </div>
+          <div class="detail-card">
+            <p class="label">Sample Rate</p>
+            <p id="sampleRate" class="value">48000 Hz / 2 ch</p>
+          </div>
+          <div class="detail-card">
+            <p class="label">Bitrate</p>
+            <p id="bitrate" class="value">0 kbps</p>
+          </div>
+        </div>
+
+        <div class="hint-card">
+          <p class="label">Capture Path</p>
+          <p id="capturePath" class="hint-copy">Windows shared output loopback</p>
+          <p id="dawHint" class="hint-copy">
+            ASIO cannot be captured directly. For ASIO DAWs, route the DAW to a shared WASAPI device or a virtual cable such as VB-CABLE. Sadly that is just the case until I find a better way to develop the application.
+          </p>
+        </div>
+
+        <div class="qr-card">
+          <div>
+            <p class="label">Scan To Connect</p>
+            <p class="qr-copy">
+              Scan this QR code with your phone camera to open the VibraLink receiver page instantly.
+            </p>
+          </div>
+          <div id="qrFrame" class="qr-frame">
+            <img id="qrImage" alt="Phone URL QR code" />
+          </div>
+        </div>
+
+        <div class="hint-card">
+          <p class="label">Instructions</p>
+          <ol>
+            <li>Keep this desktop app open.</li>
+            <li>Select the Windows output device or a virtual cable for capture.</li>
+            <li>Choose a quality mode, then click <strong>Start Streaming</strong>.</li>
+            <li>Open the displayed URL on your phone over the same WiFi.</li>
+            <li>Tap <strong>Connect</strong> on the phone page.</li>
+          </ol>
+        </div>
+      </section>
+    </main>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/desktop/app.js"></script>
+  </body>
+  </html>
