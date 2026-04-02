@@ -1,151 +1,158 @@
 # VibraLink
 
-VibraLink is a Windows Electron desktop app that captures PC output audio and streams it to a phone browser over the local network using WebRTC and Opus.
+Stream your PC audio to your phone over your local network.  
+No accounts. No cloud. No unnecessary complexity.
 
-## What changed in this version
+---
 
-- Added a capture settings panel in the desktop UI
-- Added Windows output-device discovery and device selection
-- Added quality presets for `Low latency`, `Balanced`, and `High quality`
-- Upgraded the WebRTC audio path to explicitly prefer stereo Opus at 48 kHz
-- Raised sender bitrate targets to 128 kbps, 160 kbps, and 256 kbps depending on mode
-- Added sender telemetry for current bitrate, sample rate, capture path, and connected device
-- Improved reconnect handling and server-side audio status reporting
+## ✨ Overview
 
-## Architecture
+VibraLink is a lightweight Windows desktop application that allows you to stream system audio from your PC directly to your phone using your browser.
 
-- `source/main/main.js`: Electron bootstrap and loopback capture handler
-- `source/main/server/appServer.js`: Express + Socket.IO runtime server, signaling, audio settings APIs, and status fanout
-- `source/main/audio/qualityPresets.js`: central audio preset definitions
-- `source/main/audio/windowsAudioDeviceService.js`: Node wrapper around Windows audio-device helper commands
-- `source/main/audio/windowsAudioDeviceService.ps1`: Windows render-device enumeration and default-output switching helper
-- `source/renderer/desktop/*`: desktop control UI, device selection, quality settings, and sender telemetry
-- `source/renderer/phone/*`: phone receiver UI and WebRTC playback
+It is designed to be simple, fast, and completely local — your audio never leaves your network.
 
-## Capture model
+---
 
-VibraLink still uses Chromium / Electron system loopback capture for the actual media track, but it now wraps that path with Windows output-device control:
+## 🤖 Development Note
 
-1. The desktop UI enumerates active Windows render devices.
-2. When you choose a specific output device, VibraLink temporarily promotes that device to the Windows shared default output during capture.
-3. Electron loopback capture then locks onto that shared output consistently.
-4. When streaming stops, VibraLink restores the previous default output device.
+This project was initially built with the help of OpenAI Codex.
 
-This is the practical path that improves reliability for shared-mode DAW monitoring without downgrading audio quality.
+What started as an experiment — exploring how quickly a functional system could be built using AI — turned into something that actually works and may be useful to others.
 
-## DAW support and limitations
+VibraLink was never originally intended as a "serious" product, but after seeing it in action, it has evolved into a practical tool that will continue to be improved over time.
 
-### Supported well
+Going forward:
+- The project will be actively maintained and refined
+- Features and improvements will be based on real-world usage
+- Feedback, issues, and contributions are welcome
 
-- Standard Windows apps playing through the default output
-- DAWs using `WASAPI (shared)`
-- DAWs using `DirectSound`
-- DAWs routed to a shared Windows device or virtual cable
+AI was used as a tool to accelerate development, but the project is actively reviewed and developed further by me.
 
-### Important limitation: ASIO
+---
 
-ASIO streams are not exposed to Chromium system loopback capture directly. VibraLink cannot directly capture a DAW that is talking only to an ASIO device path.
+## 🚀 Features
 
-### Recommended DAW workflows
+- Stream Windows system audio (WASAPI loopback)
+- Select audio input device (choose what to capture)
+- Quality modes:
+  - Low latency
+  - Balanced
+  - High quality
+- Low-latency playback using WebRTC
+- Works in any modern phone browser
+- Local network only (privacy-friendly)
+- Simple desktop interface
 
-1. Best shared-mode option:
-   - Set the DAW output to `WASAPI (shared)` on the device you want to monitor.
-   - In VibraLink, select that same Windows output device.
+---
 
-2. Best ASIO fallback:
-   - Keep the DAW on ASIO if needed for production work.
-   - Route a monitor bus or duplicate output to a virtual audio device such as `VB-CABLE`.
-   - In VibraLink, select the virtual cable render device.
+## 📦 Download
 
-3. Hardware-interface workflow:
-   - If your interface exposes a shared Windows render endpoint, route monitoring there.
-   - Select that interface output in VibraLink before starting the stream.
+Download the latest Windows installer from the **Releases** section.
 
-## Audio quality defaults
+---
 
-- Codec: `Opus`
-- Target sample rate: `48000 Hz`
-- Channels: `Stereo`
-- Quality presets:
-  - `Low latency`: `128 kbps`
-  - `Balanced`: `160 kbps`
-  - `High quality`: `256 kbps`
+## 🛠️ How to Use
 
-The sender prefers stereo Opus and advertises bitrate / packetization hints through SDP and sender parameters. Echo cancellation, noise suppression, and automatic gain control are disabled to keep the signal path clean for music and DAW monitoring.
+1. Install and open VibraLink  
+2. Select your audio input device  
+3. Choose a quality mode  
+4. Click **Start Streaming**  
+5. Open the displayed URL on your phone (same WiFi network)  
+6. Tap connect and start listening  
 
-## Status model
+---
 
-The desktop UI now exposes:
+## 🎧 DAW Usage (Important)
 
-- `Starting`
-- `Streaming`
-- `Connected device`
-- Current bitrate
-- Current sample rate
-- Capture path
+VibraLink works best with standard Windows audio paths (WASAPI shared).
 
-If the peer link drops, the desktop host automatically renegotiates when the phone reconnects.
+### ⚠️ Limitation
 
-## Run locally
+ASIO-based audio (used by many DAWs) cannot be captured directly due to how Windows audio drivers work.
 
-1. Install dependencies:
+### ✅ Recommended Workflows
 
-   ```bash
-   npm install
-   ```
+For DAW monitoring:
 
-2. Start the desktop app:
+**Option 1 (simplest):**
+- Switch your DAW audio driver to **WASAPI (shared)**
 
-   ```bash
-   npm start
-   ```
+**Option 2 (recommended for flexibility):**
+- Use a virtual audio device (e.g. VB-CABLE)
+- Route DAW output → virtual device → VibraLink
 
-3. In the Electron window:
-   - Select the Windows output device you want to monitor
-   - Choose a quality mode
-   - Click `Start Streaming`
-   - Open the displayed `Phone URL` on your phone
-   - Tap `Connect` on the phone page
+This ensures VibraLink can properly capture and stream your audio.
 
-## Build the Windows .exe
+This will be fixed in the future!
 
-```bash
-npm run build:win
-```
+---
 
-The generated installer will be written to `dist/`.
+## 🧠 How It Works
 
-## Troubleshooting
+VibraLink captures system audio using Windows loopback (WASAPI), encodes it, and streams it over your local network using WebRTC.
 
-### No audio on the phone
+Your phone connects through a simple web interface served by the desktop app.
 
-- Make sure the phone and PC are on the same WiFi or LAN.
-- Make sure VibraLink is streaming and the phone page is connected.
-- Confirm the selected Windows output device is the one actually carrying the audio.
-- If the source is a DAW, verify it is using `WASAPI shared`, `DirectSound`, or a virtual cable path.
+---
 
-### Poor quality or artifacts
+## ⚠️ Known Limitations
 
-- Use `Balanced` or `High quality`.
-- Avoid changing Windows sample-rate settings while streaming.
-- Make sure the DAW or system output is not being routed through enhancement software.
-- Restart the stream after changing audio devices.
+- ASIO audio cannot be captured directly
+- Performance may vary depending on network quality
+- Very low latency modes may reduce audio quality slightly
 
-### DAW is not detected
+---
 
-- If the DAW uses ASIO only, VibraLink will not see it directly.
-- Route the DAW to a shared Windows device or to `VB-CABLE`.
-- Re-select the intended capture device in VibraLink and start streaming again.
+## 🔓 Open Source
 
-### Wrong output device is being captured
+VibraLink is an open-source project.
 
-- Select the exact render device in the VibraLink settings panel before starting.
-- VibraLink temporarily switches the Windows shared default output to that device while capture is active.
-- Stop the stream to restore the previous default output.
+- You are free to view, use, modify, and distribute the code in accordance with the included license
+- The project is intended to be transparent and accessible
 
-## Verification completed during this refactor
+Please note:
+- Framefield is not responsible for modified or redistributed versions
+- Only download official builds from this repository’s release page
 
-- Verified Windows render-device enumeration through the new helper
-- Verified default-output switching and restoration on start / stop
-- Verified `/api/audio/settings`, `/api/audio/start`, and `/api/audio/stop` endpoint flows
-- Verified JavaScript syntax for the updated desktop, phone, and server code
+---
+
+## ⚠️ Disclaimer
+
+This software is provided **"as is"**, without warranty of any kind.
+
+Framefield is not liable for any damage, data loss, or issues resulting from the use of this software or any modified versions.
+
+---
+
+## ❤️ Support
+
+If you find VibraLink useful and want to support development:
+
+👉 [[Ko-fi link here]](https://ko-fi.com/wtchtwr)
+
+Donations help support continued improvements and new features.
+
+No pressure — just using VibraLink is already appreciated.
+
+---
+
+## 🧩 Contributing
+
+Contributions, suggestions, and improvements are welcome.
+
+Feel free to:
+- open issues
+- submit pull requests
+- share ideas
+
+---
+
+## 📌 Project Status
+
+Active — ongoing improvements and refinements.
+
+---
+
+## 👤 Author
+
+Developed by **Jayden / Framefield**
