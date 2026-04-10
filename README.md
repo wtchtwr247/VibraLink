@@ -155,4 +155,4 @@ Active — ongoing improvements and refinements.
 
 ## 👤 Author
 
-Developed by **Jayden / Framefield**
+Developed by **WTCHTWR @ FRAMEFIELD**
